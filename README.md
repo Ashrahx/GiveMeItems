@@ -1,114 +1,173 @@
 <div align="center">
   <br />
-    <a href="https://github.com/tu-usuario/GiveMeItems" target="_blank">
-      <img src="https://via.placeholder.com/800x400.png?text=GiveMeItems+Banner" alt="Project Banner">
-    </a>
-  <br />
+  <a href="https://github.com/Ashrahx/GiveMeItems" target="_blank">
+    <img src="https://i.imgur.com/539S0fI.png" alt="GiveMeItems Banner" width="800" />
+  </a>
+  <br /><br />
 
   <div>
-    <img alt="Static Badge" src="https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white">
-        <img src="https://img.shields.io/badge/.NET_6.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
-        <img src="https://img.shields.io/badge/SMAPI-4.0+-brightgreen?style=for-the-badge" alt="SMAPI" />
-    <img alt="Static Badge" src="https://img.shields.io/badge/Stardew_Valley-1.6+-ff69b4?style=for-the-badge">
+    <img src="https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white" alt="C#" />
+    <img src="https://img.shields.io/badge/.NET_6.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 6.0" />
+    <img src="https://img.shields.io/badge/SMAPI-4.0+-brightgreen?style=for-the-badge" alt="SMAPI" />
+    <img src="https://img.shields.io/badge/Stardew_Valley-1.6+-ff69b4?style=for-the-badge" alt="Stardew Valley" />
+    <img src="https://img.shields.io/badge/Nexus_Mods-Available-orange?style=for-the-badge" alt="Nexus Mods" />
   </div>
 
-  <h3 align="center">GiveMeItems - Stardew Valley Item Spawner</h3>
+  <br />
 
-   <div align="center">
-     ¡Obtén cualquier objeto al instante en Stardew Valley sin afectar a otros jugadores en multijugador!
-    </div>
+  <h1>✨ GiveMeItems</h1>
+  <h3><em>Stardew Valley Item Spawner Mod</em></h3>
+
+  <p>
+    Obtén cualquier objeto al instante en Stardew Valley — sin comandos de consola, sin menús complejos, sin afectar a tus compañeros de multijugador.
+  </p>
+
+  <br />
+
+  <a href="https://www.nexusmods.com/stardewvalley/mods/43902" target="_blank">
+    <img src="https://img.shields.io/badge/⬇️_Descargar_en_Nexus_Mods-DA8A00?style=for-the-badge&logoColor=white" alt="Descargar en Nexus Mods" height="40" />
+  </a>
+
+  <br /><br />
+
 </div>
 
-## 📋 <a name="table">Table of Contents</a>
+---
 
-1. ✨ [Introduction](#introduction)
-2. ⚙️ [Tech Stack](#tech-stack)
-3. 🔋 [Features](#features)
-4. 🤸 [Quick Start](#quick-start)
-5. 🔗 [Item IDs & Resources](#links)
-6. 🚀 [More](#more)
+## 📋 Tabla de Contenidos
 
-## 🚨 Mod Showcase
+1. [✨ ¿Qué es GiveMeItems?](#-qué-es-givemeitems)
+2. [🎮 ¿Cómo funciona?](#-cómo-funciona)
+3. [🔋 Características](#-características)
+4. [⚙️ Tech Stack](#️-tech-stack)
+5. [🤸 Guía de Instalación](#-guía-de-instalación)
+   - [Instalación Simple (sin código)](#instalación-simple-sin-código)
+   - [Compilar desde el código fuente](#compilar-desde-el-código-fuente)
+6. [🔗 IDs de Objetos y Recursos](#-ids-de-objetos-y-recursos)
+7. [🤝 Contribuir](#-contribuir)
 
-Este repositorio contiene el código fuente de **GiveMeItems**, un mod diseñado para ser ligero, rápido y seguro para partidas cooperativas. 
+---
 
-Si solo quieres usar el mod sin tocar código, puedes descargarlo directamente desde nuestra página oficial en Nexus Mods o seguir las instrucciones de instalación más abajo. ¡Ideal para constructores y creadores de contenido!
+## ✨ ¿Qué es GiveMeItems?
 
-<a href="https://nexusmods.com/stardewvalley/mods/TULINK" target="_blank"><img src="https://via.placeholder.com/800x100.png?text=Descargar+en+Nexus+Mods" /></a>
+**GiveMeItems** es un mod para Stardew Valley enfocado en una sola cosa y hacerla bien: darte el objeto que necesitas, cuando lo necesitas.
 
-## <a name="introduction">✨ Introduction</a>
+A diferencia de los menús de trampas masivos, este mod tiene una interfaz minimalista que respeta el estilo visual original del juego (**Vanilla UI**) y opera de forma **estrictamente local** en sesiones multijugador — tus compañeros no se ven afectados.
 
-**GiveMeItems** te permite presionar la tecla **G** en el juego para abrir un menú personalizado, escribir el nombre o el ID de cualquier objeto y recibirlo directamente en tu inventario. 
+> 💡 **Ideal para**: constructores de granjas, creadores de contenido, jugadores que quieren testear builds, o simplemente quien quiera pasar de buscar materiales.
 
-A diferencia de los menús de trampas masivos, este mod está enfocado en una sola tarea, cuenta con una interfaz que respeta el estilo visual (Vanilla) del juego y funciona de manera estrictamente local en multijugador (solo te da el objeto a ti, sin enviar comandos ni afectar el mundo compartido).
+---
 
-## <a name="tech-stack">⚙️ Tech Stack</a>
+## 🎮 ¿Cómo funciona?
 
-- **[C#](https://learn.microsoft.com/en-us/dotnet/csharp/)** es el lenguaje de programación principal utilizado para desarrollar la lógica del mod.
-- **[.NET 6.0](https://dotnet.microsoft.com/)** es el framework requerido para compilar y ejecutar mods en la versión 1.6 de Stardew Valley.
-- **[SMAPI (Stardew Modding API)](https://smapi.io/)** es el cargador de mods subyacente que permite interceptar eventos del juego, botones y manipular el inventario.
-- **[MonoGame](https://monogame.net/)** es el framework de renderizado de Stardew Valley, utilizado aquí para dibujar nuestra interfaz gráfica personalizada (UI) con `SpriteBatch` y texturas nativas.
-
-## <a name="features">🔋 Features</a>
-
-👉 **Obtención Instantánea**: Presiona `G` (configurable) para abrir el menú de texto, escribe lo que necesitas y presiona Enter.
-
-👉 **Búsqueda Inteligente**: Soporta la entrada del ID numérico exacto (ej. `74`) o búsqueda por nombre parcial (ej. `Diamante`, `Madera`).
-
-👉 **Seguro para Multijugador**: Los objetos se entregan mediante métodos locales (`addItemToInventory`). Si no eres el host, no afecta a tus compañeros ni rompe la economía global a menos que tú lo decidas.
-
-👉 **Menú Integrado (Vanilla UI)**: Interfaz gráfica construida desde cero que simula perfectamente las ventanas, fuentes y cursores originales de Stardew Valley.
-
-👉 **Altamente Configurable**: Una vez ejecutado el mod por primera vez, se generará un archivo `config.json` donde podrás cambiar la tecla de activación (`ActivateKey`) y la cantidad de objetos por defecto (`DefaultQuantity`).
-
-## <a name="quick-start">🤸 Quick Start</a>
-
-Sigue estos pasos para compilar e instalar el proyecto localmente en tu máquina.
-
-**Prerequisites**
-
-Asegúrate de tener instalado lo siguiente:
-- [Stardew Valley 1.6+](https://store.steampowered.com/app/413150/Stardew_Valley/)
-- [SMAPI 4.0+](https://smapi.io/)
-- [.NET SDK 6.0](https://dotnet.microsoft.com/download/dotnet/6.0) (Solo si vas a compilar el código fuente)
-
-**Cloning the Repository**
-
-```bash
-git clone [https://github.com/tu-usuario/GiveMeItems.git](https://github.com/tu-usuario/GiveMeItems.git)
-cd GiveMeItems
-````
-
-**Configuration**
-
-Abre el archivo `GiveMeItems.csproj` y asegúrate de que la ruta `<GamePath>` coincida con la instalación de tu juego:
-
-```xml
-<GamePath>C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley</GamePath>
+```
+1. Presiona  G  mientras juegas
+         ↓
+2. Escribe el nombre o ID del objeto
+   Ej: "Diamond"  o  "74"
+         ↓
+3. Presiona  Enter
+         ↓
+4. ¡El objeto aparece en tu inventario!
 ```
 
-**Building the Project**
+---
 
-Compila el proyecto usando la CLI de .NET:
+## 🔋 Características
+
+| Característica | Descripción |
+|---|---|
+| ⚡ **Obtención Instantánea** | Presiona `G`, escribe, Enter. Sin ventanas extra, sin pasos innecesarios. |
+| 🔍 **Búsqueda Inteligente** | Busca por ID numérico exacto (`74`) o por nombre parcial (`Diamond`, `Wood`). |
+| 👥 **Seguro para Multijugador** | Los objetos se entregan solo a ti mediante `addItemToInventory` local. No afecta el mundo compartido. |
+| 🎨 **Vanilla UI** | La interfaz imita fielmente las ventanas, fuentes y cursores originales de Stardew Valley. |
+| ⚙️ **Configurable** | Al ejecutar el mod por primera vez se genera un `config.json`. Desde ahí puedes cambiar: |
+| | → `ActivateKey` — la tecla para abrir el menú (por defecto: `G`) |
+| | → `DefaultQuantity` — la cantidad de objetos entregados por defecto |
+
+---
+
+## ⚙️ Tech Stack
+
+- **[C#](https://learn.microsoft.com/en-us/dotnet/csharp/)** — lenguaje principal del mod.
+- **[.NET 6.0](https://dotnet.microsoft.com/)** — framework requerido para mods de Stardew Valley 1.6.
+- **[SMAPI](https://smapi.io/)** — cargador de mods que permite interceptar eventos, botones y manipular el inventario del juego.
+- **[MonoGame](https://monogame.net/)** — framework de renderizado de Stardew Valley, usado para dibujar la UI personalizada con `SpriteBatch` y texturas nativas.
+
+---
+
+## 🤸 Guía de Instalación
+
+### Instalación Simple (sin código)
+
+Si solo quieres **usar** el mod, no necesitas compilar nada:
+
+1. Asegúrate de tener [Stardew Valley 1.6+](https://store.steampowered.com/app/413150/Stardew_Valley/) y [SMAPI 4.0+](https://smapi.io/) instalados.
+2. Descarga el mod desde **[Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/43902)**.
+3. Extrae la carpeta `GiveMeItems` dentro de tu directorio de mods:
+   - **Windows**: `%APPDATA%\StardewValley\Mods\`
+   - **Linux / macOS**: `~/.config/StardewValley/Mods/`
+4. Inicia el juego a través de **SMAPI** y presiona `G` en el juego. ¡Listo!
+
+---
+
+### Compilar desde el código fuente
+
+Si quieres modificar o explorar el código, sigue estos pasos:
+
+**Prerrequisitos**
+
+- [Stardew Valley 1.6+](https://store.steampowered.com/app/413150/Stardew_Valley/)
+- [SMAPI 4.0+](https://smapi.io/)
+- [.NET SDK 6.0](https://dotnet.microsoft.com/download/dotnet/6.0)
+
+**1. Clonar el repositorio**
+
+```bash
+git clone https://github.com/Ashrahx/GiveMeItems.git
+cd GiveMeItems
+```
+
+**2. Configurar la ruta del juego**
+
+Abre `GiveMeItems.csproj` y ajusta `<GamePath>` para que apunte a tu instalación de Stardew Valley:
+
+```xml
+<!-- Windows (Steam, ruta típica) -->
+<GamePath>C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley</GamePath>
+
+<!-- Linux (Steam) -->
+<!-- <GamePath>~/.steam/steam/steamapps/common/Stardew Valley</GamePath> -->
+```
+
+**3. Compilar**
 
 ```bash
 dotnet build
 ```
 
-**Installation**
-Copia el contenido generado en `bin/Debug/net6.0/` a tu carpeta de **Mods** de Stardew Valley (ej. `%APPDATA%\StardewValley\Mods\` o la ruta de Steam). ¡Inicia el juego a través de SMAPI y presiona `G`\!
+**4. Instalar**
 
-## \<a name="links"\>🔗 Item IDs & Resources\</a\>
+Copia el contenido generado en `bin/Debug/net6.0/` a tu carpeta de Mods de Stardew Valley e inicia el juego con SMAPI.
 
-Puedes encontrar todos los IDs numéricos actualizados para generar tus objetos en la wiki oficial de modding.
+---
 
-\<a href="https://stardewvalleywiki.com/Modding:Item\_queries" target="\_blank"\>
-\<img src="https://www.google.com/search?q=https://via.placeholder.com/800x100.png%3Ftext%3DVer%2BLista%2Bde%2BIDs%2Ben%2Bla%2BWiki" alt="Wiki Link Banner"\>
-\</a\>
+## 🔗 IDs de Objetos y Recursos
 
-## \<a name="more"\>🚀 More\</a\>
+¿No sabes el nombre o ID del objeto que buscas? Consulta la wiki oficial de modding de Stardew Valley:
 
-**¿Te ha sido útil este mod?**
+- 📖 **[Wiki de Modding — Item Queries](https://stardewvalleywiki.com/Modding:Item_queries)** — Lista completa y actualizada de IDs de objetos.
+- 📖 **[Stardew Valley Wiki — Items](https://stardewvalleywiki.com/Items)** — Referencia general de todos los objetos del juego.
 
-Si disfrutaste usar este mod o explorar su código fuente, considera darle una ⭐ al repositorio y revisar la página de Nexus Mods. Si encuentras algún error o tienes sugerencias, ¡siéntete libre de abrir un *Issue* o un *Pull Request*\!
+---
 
+## 🤝 Contribuir
+
+¿Encontraste un bug o tienes una idea para mejorar el mod?
+
+- ⭐ **Dale una estrella** al repositorio si te fue útil.
+- 🐛 **Abre un Issue** si encuentras algún error o comportamiento inesperado.
+- 🔧 **Abre un Pull Request** si quieres contribuir directamente con código.
+- 💬 **Deja un comentario** en la página de [Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/43902) con feedback o sugerencias.
+
+Todo tipo de contribución es bienvenida. ¡Gracias por usar GiveMeItems! 🌾
