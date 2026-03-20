@@ -15,8 +15,8 @@
 
   <br />
 
-  <h1>✨ GiveMeItems</h1>
-  <h3><em>Stardew Valley Item Spawner Mod</em></h3>
+  <h1>GiveMeItems</h1>
+  <h3><em>Stardew Valley Mod</em></h3>
 
   <p>
     Obtén cualquier objeto al instante en Stardew Valley — sin comandos de consola, sin menús complejos, sin afectar a tus compañeros de multijugador.
