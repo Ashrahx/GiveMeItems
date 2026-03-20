@@ -1,7 +1,7 @@
 <div align="center">
   <br />
     <a href="https://github.com/tu-usuario/GiveMeItems" target="_blank">
-      <img src="https://via.placeholder.com/800x400.png?text=GiveMeItems+Banner" alt="Project Banner">
+      <img src="https://i.imgur.com/539S0fI.png" alt="Project Banner">
     </a>
   <br />
 
