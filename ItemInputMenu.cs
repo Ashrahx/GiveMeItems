@@ -14,13 +14,13 @@ namespace GiveMeItems
         private const int MenuHeight = 320;
         private const int Padding    = 24;
 
-        private string   InputText  = "";
-        private new bool IsActive   = true;
-        private int      Quantity   = 1;
+        private string   InputText   = "";
+        private new bool IsActive    = true;
+        private int      Quantity    = 1;
 
-        private Item?  PreviewItem  = null;
-        private string PreviewLabel = "";
-        private int    PreviewTimer = 0;
+        private Item?   PreviewItem  = null;
+        private string  PreviewLabel = "";
+        private int     PreviewTimer = 0;
 
         private readonly Action<string, int> OnConfirm;
 
@@ -55,7 +55,6 @@ namespace GiveMeItems
                 Game1.mouseCursors,
                 Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 47), 1f);
 
-            // Botones + y - del NumberSelectionMenu de Stardew (los mismos de la tienda)
             MinusButton = new ClickableTextureComponent(
                 new Rectangle(0, 0, 28, 32), Game1.mouseCursors,
                 new Rectangle(177, 345, 7, 8), 4f);
@@ -64,8 +63,6 @@ namespace GiveMeItems
                 new Rectangle(0, 0, 28, 32), Game1.mouseCursors,
                 new Rectangle(184, 345, 7, 8), 4f);
         }
-
-        // ── Input ─────────────────────────────────────────────────────────
 
         public override void receiveKeyPress(Keys key)
         {
@@ -107,8 +104,6 @@ namespace GiveMeItems
             MinusButton.tryHover(x, y, 0.2f);
             PlusButton.tryHover(x, y, 0.2f);
         }
-
-        // ── Lógica ────────────────────────────────────────────────────────
 
         private void ChangeQuantity(int delta)
         {
@@ -174,37 +169,28 @@ namespace GiveMeItems
             if (PreviewTimer < 30) { PreviewTimer++; if (PreviewTimer == 30) UpdatePreview(); }
         }
 
-        // ── Draw ──────────────────────────────────────────────────────────
-
         public override void draw(SpriteBatch b)
         {
-            // 1. Overlay
             b.Draw(Game1.fadeToBlackRect,
                 new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height),
                 Color.Black * 0.55f);
 
-            // 2. Panel principal
             drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60),
                 xPositionOnScreen, yPositionOnScreen, width, height,
                 Color.White, drawShadow: true);
 
-            // 3. Título con scroll vanilla ────────────────────────────────
-            // drawStringWithScrollCenteredAt dibuja exactamente el scroll de la
-            // imagen de referencia. color_Black da el café oscuro nativo de Stardew.
             SpriteText.drawStringWithScrollCenteredAt(b,
                 "Dame un objeto",
                 xPositionOnScreen + width / 2,
                 yPositionOnScreen - 4,
                 color: SpriteText.color_Black);
 
-            // 4. Etiqueta
             Utility.drawTextWithShadow(b,
                 "Escribe el ID o el nombre del objeto:",
                 Game1.smallFont,
                 new Vector2(xPositionOnScreen + Padding, yPositionOnScreen + 72),
                 Game1.textColor);
 
-            // 5. Caja de texto
             int boxX = xPositionOnScreen + Padding;
             int boxY = yPositionOnScreen + 100;
             int boxW = width - Padding * 2;
@@ -222,7 +208,6 @@ namespace GiveMeItems
                 new Vector2(boxX + 12, boxY + 14),
                 hasInput ? Game1.textColor : Color.Gray);
 
-            // 6. Preview del ítem
             int previewY = boxY + boxH + 14;
 
             if (PreviewTimer >= 30 && hasInput)
@@ -237,7 +222,6 @@ namespace GiveMeItems
                         new Vector2(xPositionOnScreen + Padding + 56, previewY + 8),
                         Game1.textColor);
 
-                    // Palomita verde
                     b.Draw(Game1.mouseCursors,
                         new Vector2(
                             xPositionOnScreen + Padding + 56 + Game1.smallFont.MeasureString(PreviewLabel).X + 10,
@@ -266,14 +250,9 @@ namespace GiveMeItems
                     Game1.textColor * 0.45f);
             }
 
-            // 7. Selector de cantidad ─────────────────────────────────────
-            // Layout: "Cantidad:"  [←]  [ 1 ]  [→]
-            // Todo alineado verticalmente al centro, a la izquierda del panel.
+            int qtyRowY  = yPositionOnScreen + MenuHeight - Padding - 50;
+            int qtyRowCY = qtyRowY + 22;
 
-            int qtyRowY   = yPositionOnScreen + MenuHeight - Padding - 50;
-            int qtyRowCY  = qtyRowY + 22; // centro vertical de la fila
-
-            // Etiqueta "Cantidad:"
             string qtyLabel     = "Cantidad:";
             Vector2 qtyLabelSz  = Game1.smallFont.MeasureString(qtyLabel);
             int     qtyLabelX   = xPositionOnScreen + Padding;
@@ -282,12 +261,10 @@ namespace GiveMeItems
             Utility.drawTextWithShadow(b, qtyLabel, Game1.smallFont,
                 new Vector2(qtyLabelX, qtyLabelY), Game1.textColor);
 
-            // Layout: [etiqueta] [espacio] [−] [caja] [+]
             int btnW    = 28;
             int btnH    = 32;
             int numBoxW = 64;
             int numBoxH = 44;
-            // Posición del botón − primero, luego caja, luego botón +
             int minusBtnX = qtyLabelX + (int)qtyLabelSz.X + 16;
             int numBoxX   = minusBtnX + btnW + 6;
             int numBoxY   = qtyRowCY - numBoxH / 2;
@@ -302,25 +279,21 @@ namespace GiveMeItems
                 new Vector2(numBoxX + (numBoxW - qtySz.X) / 2f, numBoxY + (numBoxH - qtySz.Y) / 2f),
                 Game1.textColor);
 
-            // Botón − a la izquierda de la caja
             MinusButton.bounds = new Rectangle(
                 minusBtnX,
                 qtyRowCY - btnH / 2,
                 btnW, btnH);
             MinusButton.draw(b);
 
-            // Botón + a la derecha de la caja
             PlusButton.bounds = new Rectangle(
                 numBoxX + numBoxW + 6,
                 qtyRowCY - btnH / 2,
                 btnW, btnH);
             PlusButton.draw(b);
 
-            // 8. Botones OK / Cancel
             OkButton.draw(b);
             CancelButton.draw(b);
 
-            // 9. Tooltips
             int mx = Game1.getMouseX(), my = Game1.getMouseY();
             if      (OkButton.containsPoint(mx, my))     drawToolTip(b, "Confirmar (Enter)", "", null);
             else if (CancelButton.containsPoint(mx, my)) drawToolTip(b, "Cancelar (Esc)", "", null);
