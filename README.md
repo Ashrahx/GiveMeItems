@@ -1,6 +1,3 @@
-Ahí lo tienes, listo para copiar y pegar directo en tu repositorio:
-
-````markdown
 <div align="center">
   <br />
     <a href="https://github.com/tu-usuario/GiveMeItems" target="_blank">
@@ -115,5 +112,3 @@ Puedes encontrar todos los IDs numéricos actualizados para generar tus objetos 
 
 Si disfrutaste usar este mod o explorar su código fuente, considera darle una ⭐ al repositorio y revisar la página de Nexus Mods. Si encuentras algún error o tienes sugerencias, ¡siéntete libre de abrir un *Issue* o un *Pull Request*\!
 
-```
-```
