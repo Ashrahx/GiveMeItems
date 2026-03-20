@@ -1,48 +1,14 @@
-# ==========================================
-# Archivos y carpetas de compilación
-# ==========================================
-[Bb]in/
-[Oo]bj/
+# Build output
+bin/
+obj/
 
-# ==========================================
-# Archivos específicos de Visual Studio / IDEs
-# ==========================================
+# Visual Studio
 .vs/
 *.user
-*.userosscache
-*.sln.docstates
-*.suo
-*.dbmdl
-*.suo
-*.ide
 
-# ==========================================
-# Cachés, logs y archivos temporales
-# ==========================================
-*.cache
-*.log
-*.tmp
-*.bak
-*.swp
-*.GeneratedMSBuildEditorConfig.editorconfig
-*.FileListAbsolute.txt
+# Config generado por el mod
+config.json
 
-# ==========================================
-# NuGet y dependencias
-# ==========================================
-*.nupkg
-packages/
-project.assets.json
-project.nuget.cache
-
-# ==========================================
-# Archivos del sistema operativo (Opcional)
-# ==========================================
+# OS
 .DS_Store
 Thumbs.db
-
-# ==========================================
-# Empaquetados del Mod
-# ==========================================
-# Útil para ignorar los zips generados para distribución 
-*.zip
