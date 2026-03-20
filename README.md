@@ -13,7 +13,10 @@
     <img src="https://img.shields.io/badge/Nexus_Mods-Available-orange?style=for-the-badge" alt="Nexus Mods" />
   </div>
 
-  <h3 align="center">GiveMeItems - Stardew Valley Item Spawner</h3>
+  <br />
+
+  <h1>GiveMeItems</h1>
+  <h3><em>Stardew Valley Item Mod</em></h3>
 
   <p>
     Obtén cualquier objeto al instante en Stardew Valley — sin comandos de consola, sin menús complejos, sin afectar a tus compañeros de multijugador.
@@ -143,20 +146,28 @@ Abre `GiveMeItems.csproj` y ajusta `<GamePath>` para que apunte a tu instalació
 dotnet build
 ```
 
-**Installation**
-Copia el contenido generado en `bin/Debug/net6.0/` a tu carpeta de **Mods** de Stardew Valley (ej. `%APPDATA%\StardewValley\Mods\` o la ruta de Steam). ¡Inicia el juego a través de SMAPI y presiona `G`\!
+**4. Instalar**
 
-## \<a name="links"\>🔗 Item IDs & Resources\</a\>
+Copia el contenido generado en `bin/Debug/net6.0/` a tu carpeta de Mods de Stardew Valley e inicia el juego con SMAPI.
 
-Puedes encontrar todos los IDs numéricos actualizados para generar tus objetos en la wiki oficial de modding.
+---
 
-\<a href="https://stardewvalleywiki.com/Modding:Item\_queries" target="\_blank"\>
-\<img src="https://www.google.com/search?q=https://via.placeholder.com/800x100.png%3Ftext%3DVer%2BLista%2Bde%2BIDs%2Ben%2Bla%2BWiki" alt="Wiki Link Banner"\>
-\</a\>
+## 🔗 IDs de Objetos y Recursos
 
-## \<a name="more"\>🚀 More\</a\>
+¿No sabes el nombre o ID del objeto que buscas? Consulta la wiki oficial de modding de Stardew Valley:
 
-**¿Te ha sido útil este mod?**
+- 📖 **[Wiki de Modding — Item Queries](https://stardewvalleywiki.com/Modding:Item_queries)** — Lista completa y actualizada de IDs de objetos.
+- 📖 **[Stardew Valley Wiki — Items](https://stardewvalleywiki.com/Items)** — Referencia general de todos los objetos del juego.
 
-Si disfrutaste usar este mod o explorar su código fuente, considera darle una ⭐ al repositorio y revisar la página de Nexus Mods. Si encuentras algún error o tienes sugerencias, ¡siéntete libre de abrir un *Issue* o un *Pull Request*\!
+---
 
+## 🤝 Contribuir
+
+¿Encontraste un bug o tienes una idea para mejorar el mod?
+
+- ⭐ **Dale una estrella** al repositorio si te fue útil.
+- 🐛 **Abre un Issue** si encuentras algún error o comportamiento inesperado.
+- 🔧 **Abre un Pull Request** si quieres contribuir directamente con código.
+- 💬 **Deja un comentario** en la página de [Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/43902) con feedback o sugerencias.
+
+Todo tipo de contribución es bienvenida. ¡Gracias por usar GiveMeItems! 🌾
