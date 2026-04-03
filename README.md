@@ -13,7 +13,10 @@
     <img src="https://img.shields.io/badge/Nexus_Mods-Available-orange?style=for-the-badge" alt="Nexus Mods" />
   </div>
 
-  <h3 align="center">GiveMeItems - Stardew Valley Item Spawner</h3>
+  <br />
+
+  <h1>GiveMeItems</h1>
+  <h3><em>Stardew Valley Item Mod</em></h3>
 
   <p>
     Obtén cualquier objeto al instante en Stardew Valley — sin comandos de consola, sin menús complejos, sin afectar a tus compañeros de multijugador.
@@ -95,6 +98,20 @@ Ajusta `<GamePath>` en `GiveMeItems.csproj` con la ruta a tu Stardew Valley, lue
 dotnet build
 ```
 
-Copia los archivos compilados de `bin/Debug/net6.0/` a tu carpeta de mods.
+**Installation**
+Copia el contenido generado en `bin/Debug/net6.0/` a tu carpeta de **Mods** de Stardew Valley (ej. `%APPDATA%\StardewValley\Mods\` o la ruta de Steam). ¡Inicia el juego a través de SMAPI y presiona `G`\!
 
-Necesitas [.NET SDK 6.0](https://dotnet.microsoft.com/download/dotnet/6.0).
+## \<a name="links"\>🔗 Item IDs & Resources\</a\>
+
+Puedes encontrar todos los IDs numéricos actualizados para generar tus objetos en la wiki oficial de modding.
+
+\<a href="https://stardewvalleywiki.com/Modding:Item\_queries" target="\_blank"\>
+\<img src="https://www.google.com/search?q=https://via.placeholder.com/800x100.png%3Ftext%3DVer%2BLista%2Bde%2BIDs%2Ben%2Bla%2BWiki" alt="Wiki Link Banner"\>
+\</a\>
+
+## \<a name="more"\>🚀 More\</a\>
+
+**¿Te ha sido útil este mod?**
+
+Si disfrutaste usar este mod o explorar su código fuente, considera darle una ⭐ al repositorio y revisar la página de Nexus Mods. Si encuentras algún error o tienes sugerencias, ¡siéntete libre de abrir un *Issue* o un *Pull Request*\!
+
