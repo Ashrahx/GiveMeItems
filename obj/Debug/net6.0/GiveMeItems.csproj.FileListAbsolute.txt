@@ -7,3 +7,4 @@ C:\Users\Elfud\OneDrive\Desktop\mod\GiveMeItems\bin\Debug\net6.0\manifest.json
 C:\Users\Elfud\OneDrive\Desktop\mod\GiveMeItems\bin\Debug\net6.0\GiveMeItems.deps.json
 C:\Users\Elfud\OneDrive\Desktop\mod\GiveMeItems\bin\Debug\net6.0\GiveMeItems.dll
 C:\Users\Elfud\OneDrive\Desktop\mod\GiveMeItems\obj\Debug\net6.0\GiveMeItems.dll
+C:\Users\Elfud\OneDrive\Desktop\mod\GiveMeItems\obj\Debug\net6.0\GiveMeItems.sourcelink.json

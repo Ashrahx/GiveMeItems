@@ -1,164 +1,339 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using System;
+using System.Collections.Generic;
 
 namespace GiveMeItems
 {
     public class ItemInputMenu : IClickableMenu
     {
-        private const int MenuWidth  = 560;
-        private const int MenuHeight = 320;
-        private const int Padding    = 24;
+        private const int MW = 720;
+        private const int MH = 540;
+        private const int PAD = 32;
 
-        private string   InputText   = "";
-        private new bool IsActive    = true;
-        private int      Quantity    = 1;
+        // Grid Izquierdo
+        private const int GCOLS = 3;
+        private const int GROWS = 3;
+        private const int CELL  = 112; 
+        private const int ICON  = 64;
 
-        private Item?   PreviewItem  = null;
-        private string  PreviewLabel = "";
-        private int     PreviewTimer = 0;
+        // Paneles Derechos
+        private const int RPX = PAD + (GCOLS * CELL) + 32;
+        private const int RPW = MW - RPX - PAD;
 
-        private readonly Action<string, int> OnConfirm;
+        // ── Calidades ─────────────────────────────────────────────────────────
+        private const int Q_NORMAL  = 0;
+        private const int Q_SILVER  = 1;
+        private const int Q_GOLD    = 2;
+        private const int Q_IRIDIUM = 4;
 
-        private readonly ClickableTextureComponent OkButton;
-        private readonly ClickableTextureComponent CancelButton;
-        private readonly ClickableTextureComponent MinusButton;
-        private readonly ClickableTextureComponent PlusButton;
+        private string SearchText      = "";
+        private string QuantityText    = "1";
+        private string HoverText       = "";
+        private bool   EditingQuantity = false;
+        private bool   MenuActive      = true;
+        private int    SelectedQuality = Q_NORMAL;
 
-        public ItemInputMenu(Action<string, int> onConfirm)
+        private List<Item> Results     = new();
+        private int        SelectedIdx = 0;
+        private int        SearchTimer = 0;
+
+        private readonly Action<string, int, int> OnConfirm;
+        private readonly ITranslationHelper T;
+
+        private readonly ClickableTextureComponent BtnOk;
+        private readonly ClickableTextureComponent BtnCancel;
+        private readonly ClickableTextureComponent BtnMinus;
+        private readonly ClickableTextureComponent BtnPlus;
+
+        private readonly Rectangle[] StarRects = new Rectangle[4];
+        private Rectangle SearchBoxRect;
+        private Rectangle QuantityBoxRect;
+
+        public ItemInputMenu(Action<string, int, int> onConfirm, int defaultQuantity, ITranslationHelper translation)
             : base(
-                (Game1.viewport.Width  - MenuWidth)  / 2,
-                (Game1.viewport.Height - MenuHeight) / 2,
-                MenuWidth, MenuHeight,
-                showUpperRightCloseButton: false)
+                (Game1.viewport.Width  - MW) / 2,
+                (Game1.viewport.Height - MH) / 2,
+                MW, MH, showUpperRightCloseButton: false)
         {
-            OnConfirm = onConfirm;
+            OnConfirm    = onConfirm;
+            T            = translation;
+            QuantityText = Math.Clamp(defaultQuantity, 1, 999).ToString();
+
             Game1.keyboardDispatcher.Subscriber = new TextBoxKeyboardSubscriber(this);
 
-            OkButton = new ClickableTextureComponent(
-                new Rectangle(
-                    xPositionOnScreen + MenuWidth - Padding - 64 - 4,
-                    yPositionOnScreen + MenuHeight - Padding - 64,
-                    64, 64),
+            int btnY = yPositionOnScreen + MH - PAD - 64;
+            int okX  = xPositionOnScreen + MW - PAD - 64;
+
+            BtnOk = new ClickableTextureComponent(
+                new Rectangle(okX, btnY, 64, 64),
                 Game1.mouseCursors,
                 Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
 
-            CancelButton = new ClickableTextureComponent(
-                new Rectangle(
-                    xPositionOnScreen + MenuWidth - Padding - 64 - 4 - 68,
-                    yPositionOnScreen + MenuHeight - Padding - 64,
-                    64, 64),
+            BtnCancel = new ClickableTextureComponent(
+                new Rectangle(okX - 72, btnY, 64, 64),
                 Game1.mouseCursors,
                 Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 47), 1f);
 
-            MinusButton = new ClickableTextureComponent(
-                new Rectangle(0, 0, 28, 32), Game1.mouseCursors,
-                new Rectangle(177, 345, 7, 8), 4f);
+            // Botones - / +
+            BtnMinus = new ClickableTextureComponent(
+                new Rectangle(0, 0, 48, 48), Game1.mouseCursors,
+                new Rectangle(177, 345, 7, 8), 5f);
 
-            PlusButton = new ClickableTextureComponent(
-                new Rectangle(0, 0, 28, 32), Game1.mouseCursors,
-                new Rectangle(184, 345, 7, 8), 4f);
+            BtnPlus = new ClickableTextureComponent(
+                new Rectangle(0, 0, 48, 48), Game1.mouseCursors,
+                new Rectangle(184, 345, 7, 8), 5f);
         }
 
         public override void receiveKeyPress(Keys key)
         {
-            if (!IsActive) return;
+            if (!MenuActive) return;
             switch (key)
             {
                 case Keys.Enter:  Confirm(); break;
                 case Keys.Escape: Cancel();  break;
-                case Keys.Left:   ChangeQuantity(-1);  break;
-                case Keys.Right:  ChangeQuantity(+1);  break;
-                case Keys.Up:     ChangeQuantity(+10); break;
-                case Keys.Down:   ChangeQuantity(-10); break;
-                case Keys.Back:
-                    if (InputText.Length > 0) { InputText = InputText[..^1]; ResetPreviewTimer(); }
+                case Keys.Tab:
+                    if (EditingQuantity && string.IsNullOrWhiteSpace(QuantityText))
+                        QuantityText = "1";
+                    EditingQuantity = !EditingQuantity;
+                    Game1.playSound("smallSelect");
                     break;
+                case Keys.Back:
+                    if (EditingQuantity)
+                    {
+                        if (QuantityText.Length > 0)
+                            QuantityText = QuantityText[..^1];
+                    }
+                    else if (SearchText.Length > 0)
+                    {
+                        SearchText = SearchText[..^1];
+                        ResetSearch();
+                    }
+                    break;
+                case Keys.Left:  MoveSelection(-1); break;
+                case Keys.Right: MoveSelection(+1); break;
+                case Keys.Up:    MoveSelection(-GCOLS); break;
+                case Keys.Down:  MoveSelection(+GCOLS); break;
             }
         }
 
         public void ReceiveCharacter(char c)
         {
-            if (!char.IsControl(c) && InputText.Length < 40) { InputText += c; ResetPreviewTimer(); }
+            if (char.IsControl(c) || !MenuActive) return;
+
+            if (EditingQuantity)
+            {
+                if (!char.IsDigit(c) || QuantityText.Length >= 3)
+                    return;
+
+                string next = (QuantityText == "0" ? "" : QuantityText) + c;
+                if (int.TryParse(next, out int qty))
+                    QuantityText = Math.Clamp(qty, 0, 999).ToString();
+                return;
+            }
+
+            if (SearchText.Length < 40)
+            {
+                SearchText += c;
+                ResetSearch();
+            }
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            if (OkButton.containsPoint(x, y))     { Game1.playSound("coin");        Confirm(); return; }
-            if (CancelButton.containsPoint(x, y)) { Game1.playSound("bigDeSelect"); Cancel();  return; }
-            if (MinusButton.containsPoint(x, y))  { ChangeQuantity(-1); return; }
-            if (PlusButton.containsPoint(x, y))   { ChangeQuantity(+1); return; }
+            if (BtnOk.containsPoint(x, y))     { Game1.playSound("coin");        Confirm(); return; }
+            if (BtnCancel.containsPoint(x, y)) { Game1.playSound("bigDeSelect"); Cancel();  return; }
+            if (BtnMinus.containsPoint(x, y))  { ChangeQty(-1); return; }
+            if (BtnPlus.containsPoint(x, y))   { ChangeQty(+1); return; }
+
+            if (SearchBoxRect.Contains(x, y))
+            {
+                if (EditingQuantity && string.IsNullOrWhiteSpace(QuantityText))
+                    QuantityText = "1";
+                EditingQuantity = false;
+                Game1.playSound("smallSelect");
+                return;
+            }
+
+            if (QuantityBoxRect.Contains(x, y))
+            {
+                if (!EditingQuantity)
+                    QuantityText = "";
+                EditingQuantity = true;
+                Game1.playSound("smallSelect");
+                return;
+            }
+
+            if (EditingQuantity && string.IsNullOrWhiteSpace(QuantityText))
+                QuantityText = "1";
+            EditingQuantity = false;
+
+            int[] qVals = { Q_NORMAL, Q_SILVER, Q_GOLD, Q_IRIDIUM };
+            for (int qi = 0; qi < StarRects.Length; qi++)
+            {
+                if (StarRects[qi].Contains(x, y))
+                {
+                    SetQuality(qVals[qi]);
+                    return;
+                }
+            }
+
+            for (int i = 0; i < Results.Count && i < GCOLS * GROWS; i++)
+            {
+                if (GetCellRect(i).Contains(x, y))
+                {
+                    SelectedIdx = i;
+                    Game1.playSound("smallSelect");
+                    return;
+                }
+            }
         }
 
-        public override void receiveScrollWheelAction(int direction)
-            => ChangeQuantity(direction > 0 ? 1 : -1);
+        public override void receiveScrollWheelAction(int dir) => ChangeQty(dir > 0 ? 1 : -1);
 
         public override void performHoverAction(int x, int y)
         {
-            OkButton.tryHover(x, y, 0.25f);
-            CancelButton.tryHover(x, y, 0.25f);
-            MinusButton.tryHover(x, y, 0.2f);
-            PlusButton.tryHover(x, y, 0.2f);
+            HoverText = "";
+
+            BtnOk.tryHover(x, y, 0.25f);
+            BtnCancel.tryHover(x, y, 0.25f);
+            BtnMinus.tryHover(x, y, 0.2f);
+            BtnPlus.tryHover(x, y, 0.2f);
+
+            if (BtnOk.containsPoint(x, y)) { HoverText = T.Get("menu.tooltip.confirm"); return; }
+            if (BtnCancel.containsPoint(x, y)) { HoverText = T.Get("menu.tooltip.cancel"); return; }
+            if (BtnMinus.containsPoint(x, y)) { HoverText = T.Get("menu.tooltip.minus"); return; }
+            if (BtnPlus.containsPoint(x, y)) { HoverText = T.Get("menu.tooltip.plus"); return; }
+
+            string[] qualityKeys = { "menu.quality.normal", "menu.quality.silver", "menu.quality.gold", "menu.quality.iridium" };
+            for (int qi = 0; qi < StarRects.Length; qi++)
+            {
+                if (StarRects[qi].Contains(x, y))
+                {
+                    HoverText = T.Get(qualityKeys[qi]);
+                    return;
+                }
+            }
+
+            for (int i = 0; i < Results.Count && i < GCOLS * GROWS; i++)
+            {
+                if (GetCellRect(i).Contains(x, y))
+                {
+                    HoverText = Results[i].DisplayName;
+                    return;
+                }
+            }
         }
 
-        private void ChangeQuantity(int delta)
+        private Rectangle GetCellRect(int i)
         {
-            Quantity = Math.Clamp(Quantity + delta, 1, 999);
+            int col = i % GCOLS;
+            int row = i / GCOLS;
+            return new Rectangle(
+                xPositionOnScreen + PAD + (col * CELL),
+                yPositionOnScreen + 152 + (row * CELL),
+                CELL, CELL);
+        }
+
+        private void MoveSelection(int delta)
+        {
+            if (Results.Count == 0) return;
+            SelectedIdx = Math.Clamp(SelectedIdx + delta, 0, Math.Min(Results.Count, GCOLS * GROWS) - 1);
             Game1.playSound("smallSelect");
         }
 
-        private void ResetPreviewTimer() => PreviewTimer = 0;
+        private int GetQty() => int.TryParse(QuantityText, out int v) ? Math.Clamp(v, 1, 999) : 1;
+        private void ChangeQty(int delta) { QuantityText = Math.Clamp(GetQty() + delta, 1, 999).ToString(); Game1.playSound("smallSelect"); }
+        private void SetQuality(int q) { SelectedQuality = q; Game1.playSound("smallSelect"); }
+        private void ResetSearch() { SearchTimer = 0; SelectedIdx = 0; }
+        private Item? GetSelectedItem() => Results.Count > 0 && SelectedIdx < Results.Count ? Results[SelectedIdx] : null;
 
-        private void UpdatePreview()
+        private static string FitText(string text, SpriteFont font, float maxWidth)
         {
-            if (string.IsNullOrWhiteSpace(InputText)) { PreviewItem = null; PreviewLabel = ""; return; }
+            if (string.IsNullOrEmpty(text) || font.MeasureString(text).X <= maxWidth)
+                return text;
+
+            string trimmed = text;
+            while (trimmed.Length > 1 && font.MeasureString(trimmed + "...").X > maxWidth)
+                trimmed = trimmed[..^1];
+
+            return trimmed + "...";
+        }
+
+        private static void DrawWrappedText(SpriteBatch b, string text, Vector2 position, float width, Color color, float scale = 1f)
+        {
+            string wrapped = Game1.parseText(text, Game1.smallFont, (int)(width / scale));
+            Utility.drawTextWithShadow(b, wrapped, Game1.smallFont, position, color, scale);
+        }
+
+        private void DrawPanel(SpriteBatch b, Rectangle bounds, Color tint, bool shadow = false)
+        {
+            drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60),
+                bounds.X, bounds.Y, bounds.Width, bounds.Height, tint, 1f, shadow);
+        }
+
+        private void RunSearch()
+        {
+            Results.Clear();
+            if (string.IsNullOrWhiteSpace(SearchText)) return;
+
+            string query = SearchText.Trim();
+            var exactMatches = new List<Item>();
+            var partialMatches = new List<Item>();
+            var seenIds = new HashSet<string>();
+
             try
             {
-                if (int.TryParse(InputText.Trim(), out int id))
+                if (int.TryParse(query, out int id))
                 {
                     var item = ItemRegistry.Create(id.ToString(), 1);
-                    PreviewItem  = item;
-                    PreviewLabel = item != null ? item.DisplayName : "ID no encontrado";
+                    if (item != null) Results.Add(item);
                     return;
                 }
-                string query = InputText.Trim();
-                Item? exactMatch   = null;
-                Item? partialMatch = null;
 
                 foreach (var type in ItemRegistry.ItemTypes)
+                {
                     foreach (var rid in type.GetAllIds())
                     {
                         var c = ItemRegistry.Create(rid, 1);
                         if (c == null) continue;
-                        if (c.DisplayName.Equals(query, StringComparison.OrdinalIgnoreCase))
-                        { exactMatch = c; break; }
-                        if (partialMatch == null && c.DisplayName.Contains(query, StringComparison.OrdinalIgnoreCase))
-                            partialMatch = c;
-                    }
 
-                var found = exactMatch ?? partialMatch;
-                if (found != null) { PreviewItem = found; PreviewLabel = found.DisplayName; return; }
-                PreviewItem = null; PreviewLabel = "No encontrado";
+                        if (!seenIds.Add(c.QualifiedItemId)) continue;
+
+                        if (c.DisplayName.Equals(query, StringComparison.OrdinalIgnoreCase))
+                            exactMatches.Add(c);
+                        else if (c.DisplayName.Contains(query, StringComparison.OrdinalIgnoreCase))
+                            partialMatches.Add(c);
+                    }
+                }
+
+                Results.AddRange(exactMatches);
+                Results.AddRange(partialMatches);
             }
-            catch { PreviewItem = null; PreviewLabel = ""; }
+            catch { }
         }
 
         private void Confirm()
         {
-            if (string.IsNullOrWhiteSpace(InputText)) return;
-            IsActive = false;
+            if (!MenuActive) return;
+            Item? sel = (Results.Count > 0 && SelectedIdx < Results.Count) ? Results[SelectedIdx] : null;
+            string input = sel?.QualifiedItemId ?? SearchText;
+            if (string.IsNullOrWhiteSpace(input)) return;
+
+            MenuActive = false;
             Game1.keyboardDispatcher.Subscriber = null;
             exitThisMenu();
-            OnConfirm?.Invoke(InputText, Quantity);
+            OnConfirm?.Invoke(input, GetQty(), SelectedQuality);
         }
 
         private void Cancel()
         {
-            IsActive = false;
+            MenuActive = false;
             Game1.keyboardDispatcher.Subscriber = null;
             exitThisMenu();
         }
@@ -166,141 +341,207 @@ namespace GiveMeItems
         public override void update(GameTime time)
         {
             base.update(time);
-            if (PreviewTimer < 30) { PreviewTimer++; if (PreviewTimer == 30) UpdatePreview(); }
+            if (SearchTimer < 20) { SearchTimer++; if (SearchTimer == 20) RunSearch(); }
         }
 
         public override void draw(SpriteBatch b)
         {
-            b.Draw(Game1.fadeToBlackRect,
-                new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height),
-                Color.Black * 0.55f);
+            int mouseX = Game1.getMouseX();
+            int mouseY = Game1.getMouseY();
+            Item? selectedItem = GetSelectedItem();
+
+            b.Draw(Game1.fadeToBlackRect, new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height), Color.Black * 0.72f);
 
             drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60),
-                xPositionOnScreen, yPositionOnScreen, width, height,
-                Color.White, drawShadow: true);
+                xPositionOnScreen, yPositionOnScreen, MW, MH, Color.White, drawShadow: true);
 
-            SpriteText.drawStringWithScrollCenteredAt(b,
-                "Dame un objeto",
-                xPositionOnScreen + width / 2,
-                yPositionOnScreen - 4,
-                color: SpriteText.color_Black);
+            SpriteText.drawStringWithScrollCenteredAt(b, T.Get("menu.title"),
+                xPositionOnScreen + MW / 2, yPositionOnScreen - 4);
 
-            Utility.drawTextWithShadow(b,
-                "Escribe el ID o el nombre del objeto:",
-                Game1.smallFont,
-                new Vector2(xPositionOnScreen + Padding, yPositionOnScreen + 72),
-                Game1.textColor);
+            int leftX = xPositionOnScreen + PAD;
+            int leftW = GCOLS * CELL;
+            int searchLabelY = yPositionOnScreen + 72;
 
-            int boxX = xPositionOnScreen + Padding;
-            int boxY = yPositionOnScreen + 100;
-            int boxW = width - Padding * 2;
-            int boxH = 52;
+            Utility.drawTextWithShadow(b, T.Get("menu.field.label.short"), Game1.dialogueFont,
+                new Vector2(leftX + 2, searchLabelY), new Color(82, 56, 32), 0.55f);
 
-            drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60),
-                boxX, boxY, boxW, boxH,
-                Color.Wheat * 0.55f, scale: 1f, drawShadow: false);
+            SearchBoxRect = new Rectangle(leftX, searchLabelY + 28, leftW, 48);
+            DrawPanel(b, SearchBoxRect, new Color(253, 248, 231));
 
-            bool   hasInput    = InputText.Length > 0;
-            string cursor      = IsActive && (DateTime.Now.Millisecond < 500) ? "|" : " ";
-            string displayText = hasInput ? InputText + cursor : "ej: 72  ó  Diamante" + cursor;
+            string disp = SearchText;
+            while (Game1.smallFont.MeasureString(disp + "|").X > SearchBoxRect.Width - 24 && disp.Length > 0)
+                disp = disp[1..];
 
-            Utility.drawTextWithShadow(b, displayText, Game1.smallFont,
-                new Vector2(boxX + 12, boxY + 14),
-                hasInput ? Game1.textColor : Color.Gray);
+            string cursor = (MenuActive && !EditingQuantity && DateTime.Now.Millisecond < 500) ? "|" : " ";
+            string searchDisplay = SearchText.Length > 0 ? disp + cursor : T.Get("menu.field.placeholder") + cursor;
+            Color searchColor = SearchText.Length > 0 ? Game1.textColor : Color.Gray;
+            Utility.drawTextWithShadow(b, searchDisplay, Game1.smallFont,
+                new Vector2(SearchBoxRect.X + 12, SearchBoxRect.Y + 12), searchColor);
 
-            int previewY = boxY + boxH + 14;
+            string resultsText = Results.Count > 0
+                ? T.Get("menu.results.count", new { count = Results.Count })
+                : T.Get("menu.results.none");
+            Utility.drawTextWithShadow(b, resultsText, Game1.smallFont,
+                new Vector2(leftX + 2, SearchBoxRect.Bottom + 6), new Color(90, 76, 54), 0.75f);
 
-            if (PreviewTimer >= 30 && hasInput)
+            Rectangle gridPanel = new(leftX - 8, yPositionOnScreen + 144, leftW + 16, (GROWS * CELL) + 16);
+            DrawPanel(b, gridPanel, new Color(242, 235, 214));
+
+            for (int i = 0; i < GCOLS * GROWS; i++)
             {
-                if (PreviewItem != null)
-                {
-                    PreviewItem.drawInMenu(b,
-                        new Vector2(xPositionOnScreen + Padding, previewY - 4),
-                        0.85f, 1f, 0.9f, StackDrawType.Hide, Color.White, true);
+                Rectangle cell = GetCellRect(i);
+                bool hasItem = i < Results.Count;
+                bool isSel = hasItem && i == SelectedIdx;
+                bool hovered = cell.Contains(mouseX, mouseY);
 
-                    Utility.drawTextWithShadow(b, PreviewLabel, Game1.smallFont,
-                        new Vector2(xPositionOnScreen + Padding + 56, previewY + 8),
-                        Game1.textColor);
+                Color cellTint = isSel
+                    ? new Color(214, 188, 255)
+                    : hovered ? new Color(248, 242, 226) : new Color(255, 252, 244);
 
-                    b.Draw(Game1.mouseCursors,
-                        new Vector2(
-                            xPositionOnScreen + Padding + 56 + Game1.smallFont.MeasureString(PreviewLabel).X + 10,
-                            previewY + 6),
-                        new Rectangle(194, 388, 16, 16),
-                        Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0.9f);
-                }
-                else
-                {
-                    b.Draw(Game1.mouseCursors,
-                        new Vector2(xPositionOnScreen + Padding, previewY + 4),
-                        new Rectangle(322, 498, 12, 12),
-                        Color.White, 0f, Vector2.Zero, 2.5f, SpriteEffects.None, 0.9f);
+                DrawPanel(b, cell, cellTint);
 
-                    Utility.drawTextWithShadow(b, PreviewLabel, Game1.smallFont,
-                        new Vector2(xPositionOnScreen + Padding + 36, previewY + 8),
-                        Color.Red * 0.9f);
-                }
-            }
-            else if (!hasInput)
-            {
-                Utility.drawTextWithShadow(b,
-                    "Enter para confirmar  •  Esc para cancelar",
-                    Game1.smallFont,
-                    new Vector2(xPositionOnScreen + Padding, previewY + 8),
-                    Game1.textColor * 0.45f);
+                if (!hasItem) continue;
+
+                Item item = Results[i];
+                item.drawInMenu(b, new Vector2(cell.X + (CELL - ICON) / 2f, cell.Y + 22), 1f, 1f, 0.9f, StackDrawType.Hide, Color.White, false);
             }
 
-            int qtyRowY  = yPositionOnScreen + MenuHeight - Padding - 50;
-            int qtyRowCY = qtyRowY + 22;
+            if (Results.Count == 0 && SearchTimer >= 20 && !string.IsNullOrWhiteSpace(SearchText))
+            {
+                string notFound = T.Get("menu.preview.not_found");
+                Vector2 msgSize = Game1.smallFont.MeasureString(notFound) * 0.75f;
+                Utility.drawTextWithShadow(b, notFound, Game1.smallFont,
+                    new Vector2(gridPanel.X + (gridPanel.Width - msgSize.X) / 2f, gridPanel.Center.Y - msgSize.Y / 2f), Color.DimGray, 0.75f);
+            }
 
-            string qtyLabel     = "Cantidad:";
-            Vector2 qtyLabelSz  = Game1.smallFont.MeasureString(qtyLabel);
-            int     qtyLabelX   = xPositionOnScreen + Padding;
-            int     qtyLabelY   = qtyRowCY - (int)(qtyLabelSz.Y / 2);
+            int rightX = xPositionOnScreen + RPX;
+            int rightY = yPositionOnScreen + 96;
 
-            Utility.drawTextWithShadow(b, qtyLabel, Game1.smallFont,
-                new Vector2(qtyLabelX, qtyLabelY), Game1.textColor);
+            Rectangle previewBounds = new(rightX, rightY, RPW, 110);
+            
+            Utility.drawTextWithShadow(b, T.Get("menu.preview.title"), Game1.dialogueFont,
+                new Vector2(previewBounds.X, previewBounds.Y - 26), new Color(82, 56, 32), 0.55f);
 
-            int btnW    = 28;
-            int btnH    = 32;
-            int numBoxW = 64;
-            int numBoxH = 44;
-            int minusBtnX = qtyLabelX + (int)qtyLabelSz.X + 16;
-            int numBoxX   = minusBtnX + btnW + 6;
-            int numBoxY   = qtyRowCY - numBoxH / 2;
+            DrawPanel(b, previewBounds, new Color(243, 236, 216), false); 
 
-            drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60),
-                numBoxX, numBoxY, numBoxW, numBoxH,
-                Color.Wheat * 0.55f, scale: 1f, drawShadow: false);
+            if (selectedItem != null)
+            {
+                selectedItem.drawInMenu(b, new Vector2(previewBounds.X + 16, previewBounds.Y + 24), 1f, 1f, 0.9f, StackDrawType.Hide, Color.White, false);
 
-            string  qtyStr  = Quantity.ToString();
-            Vector2 qtySz   = Game1.smallFont.MeasureString(qtyStr);
-            Utility.drawTextWithShadow(b, qtyStr, Game1.smallFont,
-                new Vector2(numBoxX + (numBoxW - qtySz.X) / 2f, numBoxY + (numBoxH - qtySz.Y) / 2f),
-                Game1.textColor);
+                string itemName = FitText(selectedItem.DisplayName, Game1.smallFont, previewBounds.Width - 90);
+                Utility.drawTextWithShadow(b, itemName, Game1.smallFont,
+                    new Vector2(previewBounds.X + 88, previewBounds.Y + 30), Game1.textColor, 0.9f);
 
-            MinusButton.bounds = new Rectangle(
-                minusBtnX,
-                qtyRowCY - btnH / 2,
-                btnW, btnH);
-            MinusButton.draw(b);
+                string idLine = T.Get("menu.preview.id", new { id = selectedItem.QualifiedItemId });
+                Utility.drawTextWithShadow(b, idLine, Game1.smallFont,
+                    new Vector2(previewBounds.X + 88, previewBounds.Y + 60), Color.DimGray, 0.65f);
+            }
+            else
+            {
+                DrawWrappedText(b, T.Get("menu.preview.empty"), new Vector2(previewBounds.X + 14, previewBounds.Y + 40), previewBounds.Width - 28, Color.Gray, 0.68f);
+            }
 
-            PlusButton.bounds = new Rectangle(
-                numBoxX + numBoxW + 6,
-                qtyRowCY - btnH / 2,
-                btnW, btnH);
-            PlusButton.draw(b);
+            Rectangle qtyBounds = new(rightX, previewBounds.Bottom + 18, RPW, 84);
+            DrawPanel(b, qtyBounds, new Color(243, 236, 216));
 
-            OkButton.draw(b);
-            CancelButton.draw(b);
+            string qtyLbl = T.Get("menu.quantity.label");
+            Utility.drawTextWithShadow(b, qtyLbl, Game1.smallFont,
+                new Vector2(qtyBounds.X + (qtyBounds.Width - Game1.smallFont.MeasureString(qtyLbl).X) / 2f, qtyBounds.Y + 8), new Color(90, 76, 54), 0.85f);
 
-            int mx = Game1.getMouseX(), my = Game1.getMouseY();
-            if      (OkButton.containsPoint(mx, my))     drawToolTip(b, "Confirmar (Enter)", "", null);
-            else if (CancelButton.containsPoint(mx, my)) drawToolTip(b, "Cancelar (Esc)", "", null);
-            else if (MinusButton.containsPoint(mx, my))  drawToolTip(b, "Menos (-1)", "", null);
-            else if (PlusButton.containsPoint(mx, my))   drawToolTip(b, "Más (+1)", "", null);
+            int btnSz = 40, numW = 96, numH = 44;
+            int rowW = btnSz + 10 + numW + 10 + btnSz;
+            int rowX = qtyBounds.X + (qtyBounds.Width - rowW) / 2;
+            int rowY = qtyBounds.Y + 30;
+
+            BtnMinus.bounds = new Rectangle(rowX, rowY, btnSz, btnSz);
+            DrawBrownButton(b, BtnMinus.bounds, "-", BtnMinus.containsPoint(mouseX, mouseY));
+
+            int numX = rowX + btnSz + 10;
+            QuantityBoxRect = new Rectangle(numX, rowY, numW, numH);
+            DrawPanel(b, QuantityBoxRect, new Color(255, 250, 238));
+
+            string qtyCursor = (EditingQuantity && DateTime.Now.Millisecond < 500) ? "|" : "";
+            string qtyDisplay = string.IsNullOrEmpty(QuantityText)
+                ? (EditingQuantity ? qtyCursor : "1")
+                : QuantityText + qtyCursor;
+            Vector2 qtySize = Game1.smallFont.MeasureString(qtyDisplay);
+            Utility.drawTextWithShadow(b, qtyDisplay, Game1.smallFont,
+                new Vector2(QuantityBoxRect.X + (QuantityBoxRect.Width - qtySize.X) / 2f, QuantityBoxRect.Y + (QuantityBoxRect.Height - qtySize.Y) / 2f - 1f), Game1.textColor);
+
+            BtnPlus.bounds = new Rectangle(numX + numW + 10, rowY, btnSz, btnSz);
+            DrawBrownButton(b, BtnPlus.bounds, "+", BtnPlus.containsPoint(mouseX, mouseY));
+
+            Rectangle qualityBounds = new(rightX, qtyBounds.Bottom + 18, RPW, 84);
+            DrawPanel(b, qualityBounds, new Color(243, 236, 216));
+
+            string rarLbl = T.Get("menu.quality.label");
+            Utility.drawTextWithShadow(b, rarLbl, Game1.smallFont,
+                new Vector2(qualityBounds.X + (qualityBounds.Width - Game1.smallFont.MeasureString(rarLbl).X) / 2f, qualityBounds.Y + 8), new Color(90, 76, 54), 0.85f);
+
+            // FIX: Array de calidades actualizado usando los spritesheet rects correctos de cada estrella nativa
+            var qualities = new (int val, string key, Rectangle src, Color color)[] {
+                (Q_NORMAL, "menu.quality.normal", new Rectangle(338, 400, 8, 8), new Color(100, 100, 100)),
+                (Q_SILVER, "menu.quality.silver", new Rectangle(338, 400, 8, 8), Color.White),
+                (Q_GOLD, "menu.quality.gold", new Rectangle(346, 400, 8, 8), Color.White),
+                (Q_IRIDIUM, "menu.quality.iridium", new Rectangle(346, 392, 8, 8), Color.White)
+            };
+
+            int starSize = 44;
+            int starGap = 12;
+            int starsWidth = (qualities.Length * starSize) + ((qualities.Length - 1) * starGap);
+            int starX = qualityBounds.X + (qualityBounds.Width - starsWidth) / 2;
+            int starY = qualityBounds.Y + 30;
+
+            for (int qi = 0; qi < qualities.Length; qi++)
+            {
+                var q = qualities[qi];
+                Rectangle starRect = new(starX + qi * (starSize + starGap), starY, starSize, starSize);
+                StarRects[qi] = starRect;
+
+                bool sel = SelectedQuality == q.val;
+                bool hovered = starRect.Contains(mouseX, mouseY);
+                float scale = sel ? 5f : hovered ? 4.6f : 4.2f;
+                Color starColor = sel ? q.color : q.color * (hovered ? 0.9f : 0.7f);
+                Vector2 pos = new(
+                    starRect.X + (starRect.Width - q.src.Width * scale) / 2f,
+                    starRect.Y + (starRect.Height - q.src.Height * scale) / 2f);
+
+                b.Draw(Game1.mouseCursors, pos, q.src, starColor, 0f, Vector2.Zero, scale, SpriteEffects.None, 0.9f);
+            }
+
+            BtnOk.draw(b);
+            BtnCancel.draw(b);
+
+            if (!string.IsNullOrWhiteSpace(HoverText))
+                drawHoverText(b, HoverText, Game1.smallFont);
 
             drawMouse(b);
+        }
+
+        private void DrawBrownButton(SpriteBatch b, Rectangle bounds, string text, bool hovered = false)
+        {
+            Color fill = hovered ? new Color(171, 120, 74) : new Color(137, 92, 52);
+            DrawPanel(b, bounds, fill);
+
+            Vector2 size = Game1.dialogueFont.MeasureString(text);
+            
+            float xOffset = text == "+" ? 1f : 0f;
+            float yOffset = text == "+" ? 1f : -2f; 
+            
+            Utility.drawTextWithShadow(b, text, Game1.dialogueFont,
+                new Vector2(bounds.X + (bounds.Width - size.X) / 2f + xOffset, bounds.Y + (bounds.Height - size.Y) / 2f + yOffset), new Color(255, 244, 210));
+        }
+
+        private void DrawItemName(SpriteBatch b, string name, Rectangle cell, bool isSel)
+        {
+            const float scale = 0.72f;
+            string displayName = FitText(name, Game1.smallFont, (cell.Width - 12) / scale);
+            Vector2 size = Game1.smallFont.MeasureString(displayName) * scale;
+            float yPos = cell.Bottom - size.Y - 8;
+            Color textColor = isSel ? new Color(56, 94, 163) : Game1.textColor;
+
+            Utility.drawTextWithShadow(b, displayName, Game1.smallFont,
+                new Vector2(cell.X + (cell.Width - size.X) / 2f, yPos), textColor, scale);
         }
     }
 
@@ -309,9 +550,9 @@ namespace GiveMeItems
         private readonly ItemInputMenu Menu;
         public TextBoxKeyboardSubscriber(ItemInputMenu menu) => Menu = menu;
         public bool Selected { get; set; } = true;
-        public void RecieveTextInput(char inputChar) => Menu.ReceiveCharacter(inputChar);
-        public void RecieveTextInput(string text)    { foreach (var c in text) Menu.ReceiveCharacter(c); }
-        public void RecieveCommandInput(char command) { }
-        public void RecieveSpecialInput(Keys key)     { }
+        public void RecieveTextInput(char c) => Menu.ReceiveCharacter(c);
+        public void RecieveTextInput(string s) { foreach (var c in s) Menu.ReceiveCharacter(c); }
+        public void RecieveCommandInput(char c) { }
+        public void RecieveSpecialInput(Keys k) { }
     }
 }

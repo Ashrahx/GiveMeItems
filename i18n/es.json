@@ -1,0 +1,38 @@
+{
+  "menu.title": "Dame un objeto",
+  "menu.field.label": "Nombre o ID del objeto:",
+  "menu.field.label.short": "Buscar objeto:",
+  "menu.field.placeholder": "ej: 72 o Diamante",
+  "menu.hint": "Enter para confirmar  •  Esc para cancelar",
+  "menu.results.none": "Escribe para buscar un objeto",
+  "menu.results.count": "{{count}} resultados",
+  "menu.preview.title": "Objeto seleccionado",
+  "menu.preview.empty": "Selecciona un objeto.",
+  "menu.preview.id": "ID: {{id}}",
+  "menu.preview.id_not_found": "ID no encontrado",
+  "menu.preview.not_found": "No encontrado",
+  "menu.quantity.label": "Cantidad:",
+  "menu.quality.label": "Rareza:",
+  "menu.quality.normal": "Normal",
+  "menu.quality.silver": "Plata",
+  "menu.quality.gold": "Oro",
+  "menu.quality.iridium": "Iridio",
+  "menu.tooltip.confirm": "Confirmar (Enter)",
+  "menu.tooltip.cancel": "Cancelar (Esc)",
+  "menu.tooltip.minus": "Menos  (-1)",
+  "menu.tooltip.plus": "Más  (+1)",
+
+  "error.id_not_found": "No existe ningún objeto con ID {{id}}.",
+  "error.name_not_found": "No encontré ningún objeto llamado \"{{name}}\".",
+  "error.create_failed": "No se pudo crear el objeto.",
+  "error.inventory_full": "Inventario lleno. No caben más {{item}}.",
+  "error.tool_not_found": "Coloca {{tool}} en el inventario primero para reemplazarlo.",
+
+  "log.ready": "GiveMeItems listo. Presiona [{{key}}] para obtener ítems.",
+  "log.gave_item": "+{{quantity}}x {{item}} calidad={{quality}} (solo local)",
+
+  "config.key.name": "Tecla para abrir el menú",
+  "config.key.tooltip": "Tecla para abrir el menú de GiveMeItems.",
+  "config.quantity.name": "Cantidad por defecto",
+  "config.quantity.tooltip": "Cuántos ítems recibirás al abrir el menú."
+}

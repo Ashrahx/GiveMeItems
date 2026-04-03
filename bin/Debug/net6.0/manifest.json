@@ -1,8 +1,8 @@
 {
   "Name": "GiveMeItems",
   "Author": "Ashrah",
-  "Version": "1.0.0",
-  "Description": "Presiona G para recibir cualquier ítem que escribas. Solo te lo da a ti.",
+  "Version": "1.0.1",
+  "Description": "A simple mod that allows you to spawn items using an in-game menu.",
   "UniqueID": "Ashrah.GiveMeItems",
   "EntryDll": "GiveMeItems.dll",
   "MinimumApiVersion": "4.0.0",

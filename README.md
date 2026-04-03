@@ -25,138 +25,76 @@
     <img src="https://img.shields.io/badge/⬇️_Descargar_en_Nexus_Mods-DA8A00?style=for-the-badge&logoColor=white" alt="Descargar en Nexus Mods" height="40" />
   </a>
 
-  <br /><br />
+<br /><br />
 
 </div>
 
 ---
 
-## 📋 Tabla de Contenidos
+## Contenido
 
-1. [✨ ¿Qué es GiveMeItems?](#-qué-es-givemeitems)
-2. [🎮 ¿Cómo funciona?](#-cómo-funciona)
-3. [🔋 Características](#-características)
-4. [⚙️ Tech Stack](#️-tech-stack)
-5. [🤸 Guía de Instalación](#-guía-de-instalación)
-   - [Instalación Simple (sin código)](#instalación-simple-sin-código)
-   - [Compilar desde el código fuente](#compilar-desde-el-código-fuente)
-6. [🔗 IDs de Objetos y Recursos](#-ids-de-objetos-y-recursos)
-7. [🤝 Contribuir](#-contribuir)
+- [¿Qué es?](#qué-es)
+- [Cómo usar](#cómo-usar)
+- [Características](#características)
+- [Instalación](#instalación)
+- [Compilar desde fuentes](#compilar-desde-fuentes)
 
 ---
 
-## ✨ ¿Qué es GiveMeItems?
+## ¿Qué es?
 
-**GiveMeItems** es un mod para Stardew Valley enfocado en una sola cosa y hacerla bien: darte el objeto que necesitas, cuando lo necesitas.
+Un mod simple para Stardew Valley que te deja obtener cualquier objeto al instante. Presiona una tecla, escribe lo que quieres, y aparece en tu inventario.
 
-A diferencia de los menús de trampas masivos, este mod tiene una interfaz minimalista que respeta el estilo visual original del juego (**Vanilla UI**) y opera de forma **estrictamente local** en sesiones multijugador — tus compañeros no se ven afectados.
-
-> 💡 **Ideal para**: constructores de granjas, creadores de contenido, jugadores que quieren testear builds, o simplemente quien quiera pasar de buscar materiales.
+La interfaz respeta el estilo visual del juego, y en multijugador solo te afecta a ti — tus compañeros no notan nada.
 
 ---
 
-## 🎮 ¿Cómo funciona?
+## Cómo usar
 
-```
-1. Presiona  G  mientras juegas
-         ↓
-2. Escribe el nombre o ID del objeto
-   Ej: "Diamond"  o  "74"
-         ↓
-3. Presiona  Enter
-         ↓
-4. ¡El objeto aparece en tu inventario!
-```
+1. Presiona `G` en el juego
+2. Escribe el nombre o ID del objeto (ej. "Diamond" o "74")
+3. Selecciona cantidad y calidad
+4. Presiona Enter
 
 ---
 
-## 🔋 Características
+## Características
 
-| Característica | Descripción |
-|---|---|
-| ⚡ **Obtención Instantánea** | Presiona `G`, escribe, Enter. Sin ventanas extra, sin pasos innecesarios. |
-| 🔍 **Búsqueda Inteligente** | Busca por ID numérico exacto (`74`) o por nombre parcial (`Diamond`, `Wood`). |
-| 👥 **Seguro para Multijugador** | Los objetos se entregan solo a ti mediante `addItemToInventory` local. No afecta el mundo compartido. |
-| 🎨 **Vanilla UI** | La interfaz imita fielmente las ventanas, fuentes y cursores originales de Stardew Valley. |
-| ⚙️ **Configurable** | Al ejecutar el mod por primera vez se genera un `config.json`. Desde ahí puedes cambiar: |
-| | → `ActivateKey` — la tecla para abrir el menú (por defecto: `G`) |
-| | → `DefaultQuantity` — la cantidad de objetos entregados por defecto |
+- Búsqueda rápida por nombre o ID
+- Interfaz estilo Stardew Valley
+- Seguro para multijugador (solo te afecta a ti)
+- Configurable con `config.json`
 
 ---
 
-## ⚙️ Tech Stack
+## Instalación
 
-- **[C#](https://learn.microsoft.com/en-us/dotnet/csharp/)** — lenguaje principal del mod.
-- **[.NET 6.0](https://dotnet.microsoft.com/)** — framework requerido para mods de Stardew Valley 1.6.
-- **[SMAPI](https://smapi.io/)** — cargador de mods que permite interceptar eventos, botones y manipular el inventario del juego.
-- **[MonoGame](https://monogame.net/)** — framework de renderizado de Stardew Valley, usado para dibujar la UI personalizada con `SpriteBatch` y texturas nativas.
+1. Descarga desde [Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/43902)
+2. Extrae la carpeta en tu directorio de mods:
+   - Windows: `%APPDATA%\StardewValley\Mods\`
+   - Linux/macOS: `~/.config/StardewValley/Mods/`
+3. Abre el juego con SMAPI
+4. Presiona `G` y listo
 
----
-
-## 🤸 Guía de Instalación
-
-### Instalación Simple (sin código)
-
-Si solo quieres **usar** el mod, no necesitas compilar nada:
-
-1. Asegúrate de tener [Stardew Valley 1.6+](https://store.steampowered.com/app/413150/Stardew_Valley/) y [SMAPI 4.0+](https://smapi.io/) instalados.
-2. Descarga el mod desde **[Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/43902)**.
-3. Extrae la carpeta `GiveMeItems` dentro de tu directorio de mods:
-   - **Windows**: `%APPDATA%\StardewValley\Mods\`
-   - **Linux / macOS**: `~/.config/StardewValley/Mods/`
-4. Inicia el juego a través de **SMAPI** y presiona `G` en el juego. ¡Listo!
+Necesitas [Stardew Valley 1.6+](https://store.steampowered.com/app/413150/Stardew_Valley/) y [SMAPI 4.0+](https://smapi.io/).
 
 ---
 
-### Compilar desde el código fuente
+## Compilar desde fuentes
 
-Si quieres modificar o explorar el código, sigue estos pasos:
-
-**Prerrequisitos**
-
-- [Stardew Valley 1.6+](https://store.steampowered.com/app/413150/Stardew_Valley/)
-- [SMAPI 4.0+](https://smapi.io/)
-- [.NET SDK 6.0](https://dotnet.microsoft.com/download/dotnet/6.0)
-
-**1. Clonar el repositorio**
+Si quieres modificar el código:
 
 ```bash
 git clone https://github.com/Ashrahx/GiveMeItems.git
 cd GiveMeItems
 ```
 
-**2. Configurar la ruta del juego**
-
-Abre `GiveMeItems.csproj` y ajusta `<GamePath>` para que apunte a tu instalación de Stardew Valley:
-
-```xml
-<!-- Windows (Steam, ruta típica) -->
-<GamePath>C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley</GamePath>
-
-<!-- Linux (Steam) -->
-<!-- <GamePath>~/.steam/steam/steamapps/common/Stardew Valley</GamePath> -->
-```
-
-**3. Compilar**
+Ajusta `<GamePath>` en `GiveMeItems.csproj` con la ruta a tu Stardew Valley, luego:
 
 ```bash
 dotnet build
 ```
 
-**Installation**
-Copia el contenido generado en `bin/Debug/net6.0/` a tu carpeta de **Mods** de Stardew Valley (ej. `%APPDATA%\StardewValley\Mods\` o la ruta de Steam). ¡Inicia el juego a través de SMAPI y presiona `G`\!
+Copia los archivos compilados de `bin/Debug/net6.0/` a tu carpeta de mods.
 
-## \<a name="links"\>🔗 Item IDs & Resources\</a\>
-
-Puedes encontrar todos los IDs numéricos actualizados para generar tus objetos en la wiki oficial de modding.
-
-\<a href="https://stardewvalleywiki.com/Modding:Item\_queries" target="\_blank"\>
-\<img src="https://www.google.com/search?q=https://via.placeholder.com/800x100.png%3Ftext%3DVer%2BLista%2Bde%2BIDs%2Ben%2Bla%2BWiki" alt="Wiki Link Banner"\>
-\</a\>
-
-## \<a name="more"\>🚀 More\</a\>
-
-**¿Te ha sido útil este mod?**
-
-Si disfrutaste usar este mod o explorar su código fuente, considera darle una ⭐ al repositorio y revisar la página de Nexus Mods. Si encuentras algún error o tienes sugerencias, ¡siéntete libre de abrir un *Issue* o un *Pull Request*\!
-
+Necesitas [.NET SDK 6.0](https://dotnet.microsoft.com/download/dotnet/6.0).

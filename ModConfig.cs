@@ -2,13 +2,13 @@ using StardewModdingAPI;
 
 namespace GiveMeItems
 {
-    /// <summary>Configuración del mod. Se edita en config.json dentro de la carpeta del mod.</summary>
+    /// <summary>Mod configuration. Edit via config.json or the in-game menu (requires Generic Mod Config Menu).</summary>
     public class ModConfig
     {
-        /// <summary>Tecla para abrir el menú de ítems. Por defecto: G</summary>
+        /// <summary>Key to open the item menu. Default: G</summary>
         public SButton ActivateKey { get; set; } = SButton.G;
 
-        /// <summary>Cantidad de ítems que recibirás cada vez. Por defecto: 1</summary>
+        /// <summary>Default item quantity. Default: 1</summary>
         public int DefaultQuantity { get; set; } = 1;
     }
 }

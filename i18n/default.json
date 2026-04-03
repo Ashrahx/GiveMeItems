@@ -1,0 +1,38 @@
+{
+  "menu.title": "Give Me Items",
+  "menu.field.label": "Item name or ID:",
+  "menu.field.label.short": "Search item:",
+  "menu.field.placeholder": "e.g. 72 or Diamond",
+  "menu.hint": "Enter to confirm  •  Esc to cancel",
+  "menu.results.none": "Type to search for an item",
+  "menu.results.count": "{{count}} results",
+  "menu.preview.title": "Selected item",
+  "menu.preview.empty": "Select an item.",
+  "menu.preview.id": "ID: {{id}}",
+  "menu.preview.id_not_found": "ID not found",
+  "menu.preview.not_found": "Not found",
+  "menu.quantity.label": "Quantity:",
+  "menu.quality.label": "Quality:",
+  "menu.quality.normal": "Normal",
+  "menu.quality.silver": "Silver",
+  "menu.quality.gold": "Gold",
+  "menu.quality.iridium": "Iridium",
+  "menu.tooltip.confirm": "Confirm (Enter)",
+  "menu.tooltip.cancel": "Cancel (Esc)",
+  "menu.tooltip.minus": "Less  (-1)",
+  "menu.tooltip.plus": "More  (+1)",
+
+  "error.id_not_found": "No item found with ID {{id}}.",
+  "error.name_not_found": "No item found named \"{{name}}\".",
+  "error.create_failed": "Failed to create item.",
+  "error.inventory_full": "Inventory full. Could not add {{item}}.",
+  "error.tool_not_found": "Place {{tool}} in inventory first to upgrade it.",
+
+  "log.ready": "GiveMeItems ready. Press [{{key}}] to open the item menu.",
+  "log.gave_item": "+{{quantity}}x {{item}} quality={{quality}} (local only)",
+
+  "config.key.name": "Activate Key",
+  "config.key.tooltip": "Key to open the Give Me Items menu.",
+  "config.quantity.name": "Default Quantity",
+  "config.quantity.tooltip": "How many items to give by default."
+}
